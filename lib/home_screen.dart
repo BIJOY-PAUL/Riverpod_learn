@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:river_pod/slider_provider.dart';
 import 'package:riverpod/legacy.dart';
 
 final counterProvider = StateProvider<int>((ref) => 0);
@@ -24,47 +25,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Consumer(
             builder: (context, ref, child) {
-              final count = ref.watch(counterProvider).toString();
+              final slider = ref.watch(
+                sliderProvider.select((state) => state.showPassword),
+              );
+              print("eye ");
 
-              print("Consumer widget rebuilds");
+              return InkWell(
+                onTap: () {
+                  final stateProvider = ref.read(sliderProvider.notifier);
+                  stateProvider.state = stateProvider.state.copyWith(
+                    showPassword: !slider,
+                  );
+                },
+                child: Container(
+                  height: 200,
+                  width: 200,
 
-              return Text(count, style: TextStyle(fontSize: 30));
+                  child: slider
+                      ? Icon(Icons.remove_red_eye)
+                      : Icon(Icons.image),
+                ),
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              final slider = ref.watch(
+                sliderProvider.select((state) => state.slider),
+              );
+              print("container");
+
+              return Container(
+                height: 200,
+                width: 200,
+
+                color: Colors.green.withValues(alpha: slider),
+              );
             },
           ),
 
           Consumer(
             builder: (context, ref, child) {
-              final switchValue = ref.watch(switchProvider);
+              final slider = ref.watch(
+                sliderProvider.select((state) => state.slider),
+              );
 
-              print("build3");
-
-              return Switch(
+              print('slider');
+              return Slider(
+                value: slider,
                 onChanged: (value) {
-                  ref.read(switchProvider.notifier).state = value;
+                  final stateProvider = ref.read(sliderProvider.notifier);
+                  stateProvider.state = stateProvider.state.copyWith(
+                    slider: value,
+                  );
                 },
-                value: switchValue,
               );
             },
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  ref.read(counterProvider.notifier).state++;
-                },
-                child: Text('+'),
-              ),
-
-              ElevatedButton(
-                onPressed: () {
-                  ref.read(counterProvider.notifier).state--;
-                },
-                child: Text('-'),
-              ),
-            ],
           ),
         ],
       ),
