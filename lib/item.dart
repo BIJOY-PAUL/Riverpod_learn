@@ -1,6 +1,6 @@
 class Item {
   String name;
-  int id;
+  String id;
 
   Item({required this.name, required this.id});
 }
